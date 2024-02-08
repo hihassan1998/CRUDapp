@@ -56,6 +56,32 @@ def edit_transaction(transaction_id):
     for transaction in transactions:
         if transaction['id'] == transaction_id:
             return render_template("edit.html", transaction=transaction)
+#Search Operation
+@app.route("/search", methods=["GET", "POST"])
+def search_transactions():
+    if request.method == 'POST':
+        # Retrieve min and max amount values from the form data
+        min_amount = float(request.form['min_amount'])
+        max_amount = float(request.form['max_amount'])
+
+        # Filter transactions based on the amount range
+        filtered_transactions = [transaction for transaction in transactions
+                                 if min_amount <= transaction['amount'] <= max_amount]
+
+        # Pass the filtered_transactions list to the template
+        return render_template("transactions.html", transactions=filtered_transactions)
+
+    # If the request method is GET, render the search form template
+    return render_template("search.html")
+# Total Balance operation
+# Total Balance operation: Calculate and display the total balance
+@app.route("/balance")
+def total_balance():
+    # Calculate total balance by summing amount values of all transactions
+    total_balance = sum(transaction['amount'] for transaction in transactions)
+
+    # Render the template with transactions list and total balance
+    return render_template("transactions.html", transactions=transactions, total_balance=total_balance)
 # Delete operation
 # Delete operation: Delete a transaction
 @app.route("/delete/<int:transaction_id>")
